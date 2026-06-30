@@ -3,638 +3,1038 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>France Vacation 2026</title>
+    <title>France 2026 - Interactive Journey</title>
     <style>
         /* ==========================================================================
-           CSS VARIABLES & RESET
+           1. CSS VARIABLES & THEME CONFIGURATION
            ========================================================================== */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.25);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            --text-light: #ffffff;
-            --text-dark: #1a1a1a;
-            --accent: #4da8da;
-            --bg-gradient-1: #0f2027;
-            --bg-gradient-2: #203a43;
-            --bg-gradient-3: #2c5364;
-            --transition-speed: 0.4s;
+            /* Liquid Glass / Mica Aesthetics */
+            --mica-bg: rgba(255, 255, 255, 0.08);
+            --mica-border: rgba(255, 255, 255, 0.15);
+            --mica-highlight: rgba(255, 255, 255, 0.25);
+            --mica-shadow-light: 0 4px 24px rgba(0, 0, 0, 0.1);
+            --mica-shadow-heavy: 0 12px 40px rgba(0, 0, 0, 0.2);
+            --mica-blur: blur(24px);
+            --mica-saturation: saturate(150%);
+
+            /* Typography */
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-accent: #a1c4fd;
+
+            /* Spacing & Layout */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 64px;
+            --border-radius-sm: 8px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-pill: 9999px;
+
+            /* Transitions */
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --duration-fast: 0.2s;
+            --duration-normal: 0.4s;
+            --duration-slow: 0.8s;
         }
 
-        * {
+        /* ==========================================================================
+           2. RESET & BASE STYLES
+           ========================================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
         body {
-            background: linear-gradient(45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: var(--text-light);
+            font-family: var(--font-sans);
+            background-color: #050505;
+            color: var(--text-main);
+            line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Custom Scrollbar for Webkit */
+        ::-webkit-scrollbar {
+            width: 10px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
         }
 
         /* ==========================================================================
-           LIQUID GLASS / MICA EFFECTS (APPLE/IOS STYLE)
+           3. BACKGROUND LIQUID CANVAS
            ========================================================================== */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            border-radius: 24px;
-        }
-
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
+        #liquid-canvas {
+            position: fixed;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.85;
         }
 
         /* ==========================================================================
-           TYPOGRAPHY & HEADERS
+           4. TYPOGRAPHY
            ========================================================================== */
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
-            text-align: center;
-            background: linear-gradient(to right, #fff, #a1c4fd);
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, var(--text-accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        h2 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
+        .title-huge {
+            font-size: clamp(3rem, 5vw, 6rem);
+            letter-spacing: -0.03em;
+            text-align: center;
+            margin: var(--spacing-xxl) 0 var(--spacing-md);
         }
 
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            opacity: 0.9;
+        .subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto var(--spacing-xxl);
+            font-weight: 300;
         }
 
         /* ==========================================================================
-           NAVIGATION TABS
+           5. LIQUID GLASS / MICA UTILITIES
            ========================================================================== */
-        nav {
-            display: flex;
-            justify-content: center;
-            padding: 1rem 2rem;
-            gap: 1rem;
-            flex-wrap: wrap;
+        .glass-panel {
+            background: var(--mica-bg);
+            backdrop-filter: var(--mica-blur) var(--mica-saturation);
+            -webkit-backdrop-filter: var(--mica-blur) var(--mica-saturation);
+            border: 1px solid var(--mica-border);
+            box-shadow: var(--mica-shadow-light);
+            border-radius: var(--border-radius-lg);
         }
 
-        .tab-btn {
+        .glass-button {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 0.8rem 1.5rem;
-            border-radius: 30px;
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: var(--border-radius-pill);
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all var(--transition-speed) ease;
-            backdrop-filter: blur(10px);
+            transition: all var(--duration-fast) var(--ease-smooth);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
         }
 
-        .tab-btn:hover {
+        .glass-button:hover, .glass-button.active {
             background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
         }
 
-        .tab-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        .glass-button:active {
+            transform: translateY(1px);
         }
 
         /* ==========================================================================
-           LAYOUT & CONTAINERS
+           6. NAVIGATION
            ========================================================================== */
-        .container {
-            max-width: 1400px;
+        .site-header {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
             margin: 0 auto;
-            padding: 2rem;
+            max-width: fit-content;
+            padding: 0 var(--spacing-md);
         }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-section {
-            text-align: center;
-            padding: 4rem 2rem;
-            margin-bottom: 3rem;
+        .nav-container {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-pill);
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         /* ==========================================================================
-           GALLERY MASONRY GRID
+           7. MAIN LAYOUT & GALLERY GRID
            ========================================================================== */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            min-height: 80vh;
+        }
+
+        .tab-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-smooth),
+                        transform var(--duration-normal) var(--ease-smooth);
+        }
+
+        .tab-section.active {
+            display: block;
+            /* Animation applied via JS classes */
+        }
+
+        .tab-section.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        /* Dynamic CSS Grid for Masonry-like appearance */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-auto-rows: 250px;
+            gap: var(--spacing-lg);
+            padding-bottom: var(--spacing-xxl);
         }
 
         .gallery-item {
             position: relative;
-            border-radius: 20px;
+            border-radius: var(--border-radius-md);
             overflow: hidden;
-            aspect-ratio: 4/5;
             cursor: pointer;
-            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            group: gallery;
+            background: rgba(255,255,255,0.02);
+            /* Transform for staggered grid look */
+            transition: transform var(--duration-normal) var(--ease-spring),
+                        box-shadow var(--duration-normal) var(--ease-smooth);
+        }
+
+        /* Utility classes for grid spanning created dynamically in JS */
+        .span-row-2 { grid-row: span 2; }
+        .span-col-2 { grid-column: span 2; }
+        
+        @media (max-width: 768px) {
+            .span-col-2 { grid-column: span 1; }
         }
 
         .gallery-item:hover {
-            transform: scale(1.03) translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            z-index: 10;
+            transform: scale(1.02) translateY(-4px);
+            box-shadow: var(--mica-shadow-heavy);
+            z-index: 2;
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 5;
         }
 
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.8s ease;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
         }
 
         .gallery-item:hover img {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
-        .image-overlay {
+        .item-overlay {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 2rem 1.5rem 1.5rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: white;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: var(--spacing-lg);
             opacity: 0;
-            transition: opacity var(--transition-speed) ease;
+            transition: opacity var(--duration-normal) var(--ease-smooth);
+            z-index: 10;
         }
 
-        .gallery-item:hover .image-overlay {
+        .gallery-item:hover .item-overlay {
             opacity: 1;
         }
 
-        /* Placeholder styling */
-        .placeholder-img {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        .item-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            transform: translateY(15px);
+            transition: transform var(--duration-normal) var(--ease-spring);
+        }
+
+        .item-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: var(--spacing-sm);
+            transform: translateY(15px);
+            transition: transform var(--duration-normal) var(--ease-spring);
+            transition-delay: 0.05s;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-item:hover .item-title,
+        .gallery-item:hover .item-desc {
+            transform: translateY(0);
+        }
+
+        /* SVG Placeholder Generator styles */
+        .placeholder-wrap {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 1.2rem;
-            font-weight: 500;
-            border: 2px dashed rgba(255,255,255,0.2);
-            border-radius: 20px;
-            height: 100%;
-            width: 100%;
+            background: linear-gradient(45deg, #1a1a24, #2a2a35);
+            color: rgba(255,255,255,0.2);
+        }
+        .placeholder-wrap svg {
+            width: 64px;
+            height: 64px;
+            opacity: 0.3;
         }
 
         /* ==========================================================================
-           LIGHTBOX / MODAL
+           8. FULLSCREEN LIGHTBOX
            ========================================================================== */
-        .lightbox {
-            display: none;
+        .lightbox-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
-            z-index: 2000;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            pointer-events: none;
+            transition: opacity var(--duration-normal) var(--ease-smooth);
         }
 
-        .lightbox.active {
-            display: flex;
+        .lightbox-container.active {
             opacity: 1;
+            pointer-events: all;
         }
 
         .lightbox-content {
-            max-width: 90%;
-            max-height: 80vh;
-            border-radius: 12px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .lightbox-close {
+        .lightbox-img-wrapper {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.95);
+            transition: transform var(--duration-normal) var(--ease-spring);
+        }
+
+        .lightbox-container.active .lightbox-img-wrapper {
+            transform: scale(1);
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: var(--border-radius-md);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            object-fit: contain;
+            user-select: none;
+        }
+
+        /* Lightbox Controls */
+        .lb-ctrl {
             position: absolute;
-            top: 30px;
-            right: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s;
+            border-radius: 50%;
+            transition: all var(--duration-fast);
+            z-index: 10000;
         }
 
-        .lightbox-close:hover {
+        .lb-ctrl:hover {
+            background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
 
-        .lightbox-caption {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            color: white;
+        .lb-close {
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+        }
+
+        .lb-prev, .lb-next {
+            top: 50%;
+            transform: translateY(-50%);
+            width: 56px;
+            height: 56px;
+        }
+
+        .lb-prev:hover, .lb-next:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lb-prev { left: 24px; }
+        .lb-next { right: 24px; }
+
+        .lb-info {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius-pill);
+            text-align: center;
+            min-width: 300px;
+            max-width: 90vw;
+        }
+
+        .lb-info h3 { margin-bottom: 4px; font-size: 1.2rem; }
+        .lb-info p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+
+        @media (max-width: 768px) {
+            .lb-prev, .lb-next { display: none; } /* Rely on swipe for mobile */
+            .lb-info { bottom: 16px; width: 90vw; border-radius: var(--border-radius-md); }
         }
 
         /* ==========================================================================
-           FLOATING ELEMENTS & ORNAMENTS
+           9. LOADING INDICATOR
            ========================================================================== */
-        .orb {
-            position: absolute;
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255,255,255,0.1);
             border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.5;
-            animation: float 20s infinite ease-in-out alternate;
-        }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #ff007f;
-            top: -100px;
-            left: -100px;
-        }
-
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: #00f0ff;
-            bottom: -200px;
-            right: -100px;
-            animation-delay: -5s;
+            border-top-color: var(--text-accent);
+            animation: spin 1s ease-in-out infinite;
+            margin: 100px auto;
+            display: none;
         }
         
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: #7000ff;
-            top: 40%;
-            left: 50%;
-            animation-delay: -10s;
+        .loader.active {
+            display: block;
         }
 
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(100px, 50px) scale(1.2); }
-            100% { transform: translate(-50px, 100px) scale(0.9); }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+    <canvas id="liquid-canvas"></canvas>
 
-    <header class="glass-nav">
-        <nav>
-            <button class="tab-btn active" onclick="openTab('overview')">Overview</button>
-            <button class="tab-btn" onclick="openTab('paris')">Paris</button>
-            <button class="tab-btn" onclick="openTab('beaune')">Beaune</button>
-            <button class="tab-btn" onclick="openTab('marseille')">Marseille</button>
-            <button class="tab-btn" onclick="openTab('pommard')">Pommard</button>
-            <button class="tab-btn" onclick="openTab('montrouge')">Montrouge</button>
-        </nav>
+    <header class="site-header">
+        <nav class="nav-container" id="main-nav">
+            </nav>
     </header>
 
-    <main class="container">
-
-        <div id="overview" class="tab-content active">
-            <div class="glass-panel hero-section">
-                <h1>France 2026</h1>
-                <p>A journey through history, culture, and architecture.</p>
-            </div>
-
-            <div class="gallery-grid">
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Image Placeholder (Replace me)</div>
-                    <div class="image-overlay">
-                        <h3>Favorite Moment</h3>
-                        <p>Description goes here.</p>
-                    </div>
-                </div>
-
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Image Placeholder (Replace me)</div>
-                    <div class="image-overlay">
-                        <h3>Beautiful Scenery</h3>
-                        <p>Description goes here.</p>
-                    </div>
-                </div>
-                
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Image Placeholder (Replace me)</div>
-                    <div class="image-overlay">
-                        <h3>Architecture</h3>
-                        <p>Description goes here.</p>
-                    </div>
-                </div>
-
-                </div>
+    <main class="main-container">
+        <div class="section-header">
+            <h1 class="title-huge gradient-text">France 2026</h1>
+            <p class="subtitle">An architectural, historical, and visual journey.</p>
         </div>
 
-        <div id="paris" class="tab-content">
-            <div class="glass-panel hero-section">
-                <h1>Paris</h1>
-                <p>The Eiffel Tower, the Louvre, and city streets.</p>
+        <div id="loader" class="loader"></div>
+        
+        <div id="tabs-container">
             </div>
+    </main>
 
-            <div class="gallery-grid">
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 1</div>
-                    <div class="image-overlay">
-                        <h3>Eiffel Tower</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 2</div>
-                    <div class="image-overlay">
-                        <h3>The Louvre</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 3</div>
-                    <div class="image-overlay">
-                        <h3>Streets</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 4</div>
-                    <div class="image-overlay">
-                        <h3>Food</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                 <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 5</div>
-                    <div class="image-overlay">
-                        <h3>Nightlife</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                 <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Paris Image 6</div>
-                    <div class="image-overlay">
-                        <h3>Museums</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
+    <div class="lightbox-container" id="lightbox">
+        <div class="lb-ctrl lb-close" id="lb-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <div class="lb-ctrl lb-prev" id="lb-prev">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div class="lb-ctrl lb-next" id="lb-next">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        
+        <div class="lightbox-content" id="lb-content">
+            <div class="lightbox-img-wrapper">
+                <img src="" alt="Fullscreen View" class="lightbox-img" id="lb-img">
+            </div>
+            <div class="lb-info">
+                <h3 id="lb-title">Image Title</h3>
+                <p id="lb-desc">Image description goes here</p>
+                <p id="lb-counter" style="font-size: 0.8rem; margin-top: 8px; opacity: 0.5;">1 / 10</p>
             </div>
         </div>
-
-        <div id="beaune" class="tab-content">
-            <div class="glass-panel hero-section">
-                <h1>Beaune</h1>
-                <p>Wine capital of Burgundy.</p>
-            </div>
-
-            <div class="gallery-grid">
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Beaune Image 1</div>
-                    <div class="image-overlay">
-                        <h3>Vineyards</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Beaune Image 2</div>
-                    <div class="image-overlay">
-                        <h3>Hospices de Beaune</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Beaune Image 3</div>
-                    <div class="image-overlay">
-                        <h3>Wine Tasting</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Beaune Image 4</div>
-                    <div class="image-overlay">
-                        <h3>Town Center</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="marseille" class="tab-content">
-            <div class="glass-panel hero-section">
-                <h1>Marseille</h1>
-                <p>Coastal beauty and Mediterranean vibes.</p>
-            </div>
-
-            <div class="gallery-grid">
-                 <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Marseille Image 1</div>
-                    <div class="image-overlay">
-                        <h3>Old Port</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Marseille Image 2</div>
-                    <div class="image-overlay">
-                        <h3>Basilica</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Marseille Image 3</div>
-                    <div class="image-overlay">
-                        <h3>Calanques</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Marseille Image 4</div>
-                    <div class="image-overlay">
-                        <h3>Seafood</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="pommard" class="tab-content">
-            <div class="glass-panel hero-section">
-                <h1>Pommard</h1>
-                <p>Renowned for its red wines and stunning estates.</p>
-            </div>
-
-            <div class="gallery-grid">
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Pommard Image 1</div>
-                    <div class="image-overlay">
-                        <h3>Château</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Pommard Image 2</div>
-                    <div class="image-overlay">
-                        <h3>Cellars</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Pommard Image 3</div>
-                    <div class="image-overlay">
-                        <h3>Countryside</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="montrouge" class="tab-content">
-            <div class="glass-panel hero-section">
-                <h1>Montrouge</h1>
-                <p>Urban exploration just outside central Paris.</p>
-            </div>
-
-            <div class="gallery-grid">
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Montrouge Image 1</div>
-                    <div class="image-overlay">
-                        <h3>Architecture</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Montrouge Image 2</div>
-                    <div class="image-overlay">
-                        <h3>Local Cafes</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-                <div class="glass-panel gallery-item" onclick="openLightbox(this)">
-                    <div class="placeholder-img">Montrouge Image 3</div>
-                    <div class="image-overlay">
-                        <h3>Parks</h3>
-                        <p>Add description.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        </main>
-
-    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
-        <span class="lightbox-close">&times;</span>
-        <div id="lightbox-placeholder" class="placeholder-img glass-panel" style="width: 80%; height: 60vh;"></div>
-        <img id="lightbox-img" class="lightbox-content" src="" alt="Full Screen Image" style="display: none;">
-        <div id="lightbox-caption" class="lightbox-caption"></div>
     </div>
 
     <script>
-        // Tab Switching Logic
-        function openTab(tabName) {
-            // Hide all tabs
-            let i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
-            }
-            
-            // Remove active class from all buttons
-            tablinks = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            
-            // Show current tab and add active class to button
-            const activeTab = document.getElementById(tabName);
-            activeTab.style.display = "block";
-            // small delay to allow display block to render before animating opacity
-            setTimeout(() => {
-                activeTab.classList.add("active");
-            }, 10);
+        /**
+         * ========================================================================
+         * 🛠️ HOW TO ADD A NEW TAB OR IMAGE (SUPER EASY)
+         * ========================================================================
+         * * 1. ADDING A TAB (CITY):
+         * Simply add a new object to the `TRIP_DATA` array below.
+         * Give it an `id`, `name`, `subtitle`, and an array of `images`.
+         * * 2. ADDING AN IMAGE:
+         * Inside any city's `images` array, add a new object:
+         * {
+         * src: "URL_OR_PATH_TO_IMAGE.jpg",
+         * title: "Title of Image",
+         * desc: "Description of Image",
+         * size: "normal" // options: "normal", "large" (2x2 grid), "tall" (2 rows), "wide" (2 cols)
+         * }
+         * * NOTE: If `src` is left empty "", the system automatically generates 
+         * a beautiful Glassmorphic placeholder for you based on the title!
+         * ========================================================================
+         */
 
-            // Find the button that called this and make it active
-            event.currentTarget.classList.add("active");
+        const TRIP_DATA = [
+            {
+                id: "overview",
+                name: "Overview",
+                subtitle: "Highlights from the 2026 trip across France.",
+                images: [
+                    { src: "", title: "The Journey Begins", desc: "Landing in Paris, ready for adventure.", size: "large" },
+                    { src: "", title: "Train to Burgundy", desc: "High speed TGV across the countryside.", size: "wide" },
+                    { src: "", title: "Coastal Views", desc: "The stunning blue waters of the south.", size: "tall" },
+                    { src: "", title: "Ancient Architecture", desc: "Centuries of history in stone.", size: "normal" },
+                    { src: "", title: "Culinary Delights", desc: "Exploring local cafes and patisseries.", size: "normal" },
+                    { src: "", title: "Sunset Strolls", desc: "Evening light hitting the cobblestones.", size: "wide" }
+                ]
+            },
+            {
+                id: "paris",
+                name: "Paris",
+                subtitle: "The Eiffel Tower, the Louvre, and vibrant city streets.",
+                images: [
+                    { src: "", title: "Eiffel Tower Sparkle", desc: "The iconic structure lit up at midnight.", size: "tall" },
+                    { src: "", title: "Louvre Pyramid", desc: "Glass and metal against historical facades.", size: "wide" },
+                    { src: "", title: "Mona Lisa Room", desc: "Crowds gathering around the masterpiece.", size: "normal" },
+                    { src: "", title: "Seine River Cruise", desc: "Viewing the city from the water at dusk.", size: "large" },
+                    { src: "", title: "Montmartre Streets", desc: "Artists painting in the bustling square.", size: "normal" },
+                    { src: "", title: "Sacré-Cœur", desc: "Overlooking the entire city of Paris.", size: "tall" },
+                    { src: "", title: "Cafe Culture", desc: "Espresso and croissants on the sidewalk.", size: "normal" },
+                    { src: "", title: "Notre Dame", desc: "Admiring the ongoing restoration work.", size: "wide" },
+                    { src: "", title: "Arc de Triomphe", desc: "The massive monument at the end of Champs-Élysées.", size: "normal" },
+                    { src: "", title: "Metro Station", desc: "Classic Art Nouveau entrances.", size: "normal" }
+                ]
+            },
+            {
+                id: "beaune",
+                name: "Beaune",
+                subtitle: "The wine capital of Burgundy.",
+                images: [
+                    { src: "", title: "Hospices de Beaune", desc: "Famous geometric colorful tile roofs.", size: "large" },
+                    { src: "", title: "Wine Tasting", desc: "Sampling Pinot Noir in ancient cellars.", size: "wide" },
+                    { src: "", title: "Vineyard Walk", desc: "Rows of vines stretching to the horizon.", size: "tall" },
+                    { src: "", title: "Historic Ramparts", desc: "Walking the old city walls.", size: "normal" },
+                    { src: "", title: "Market Day", desc: "Fresh produce and local cheeses.", size: "normal" },
+                    { src: "", title: "Barrel Room", desc: "Oak barrels aging the finest vintages.", size: "wide" },
+                    { src: "", title: "Chateau View", desc: "Classic architecture surrounded by vines.", size: "normal" }
+                ]
+            },
+            {
+                id: "marseille",
+                name: "Marseille",
+                subtitle: "Coastal beauty and Mediterranean vibes.",
+                images: [
+                    { src: "", title: "Vieux Port", desc: "Hundreds of boats in the historic old port.", size: "wide" },
+                    { src: "", title: "Notre-Dame de la Garde", desc: "The basilica watching over the city.", size: "tall" },
+                    { src: "", title: "Les Calanques", desc: "Dramatic limestone cliffs meeting the sea.", size: "large" },
+                    { src: "", title: "Bouillabaisse", desc: "The traditional local seafood stew.", size: "normal" },
+                    { src: "", title: "Le Panier", desc: "Narrow streets and vibrant street art.", size: "normal" },
+                    { src: "", title: "MuCEM", desc: "Modern architecture by the waterfront.", size: "wide" },
+                    { src: "", title: "Island of If", desc: "The fortress made famous by Dumas.", size: "normal" },
+                    { src: "", title: "Sunset Coast", desc: "Golden hour along the Mediterranean.", size: "tall" }
+                ]
+            },
+            {
+                id: "pommard",
+                name: "Pommard",
+                subtitle: "Renowned for its red wines and stunning estates.",
+                images: [
+                    { src: "", title: "Château de Pommard", desc: "The impressive estate and grounds.", size: "large" },
+                    { src: "", title: "Grape Harvest", desc: "Close up of the prized Pinot Noir grapes.", size: "normal" },
+                    { src: "", title: "Village Square", desc: "Quiet life in the French countryside.", size: "wide" },
+                    { src: "", title: "Underground Cellars", desc: "Dusty bottles from decades past.", size: "tall" },
+                    { src: "", title: "Tasting Flight", desc: "Comparing different plots of land.", size: "normal" }
+                ]
+            },
+            {
+                id: "montrouge",
+                name: "Montrouge",
+                subtitle: "Urban exploration just outside central Paris.",
+                images: [
+                    { src: "", title: "Town Hall", desc: "The Mairie de Montrouge architecture.", size: "wide" },
+                    { src: "", title: "Local Parks", desc: "Green spaces hidden in the urban grid.", size: "tall" },
+                    { src: "", title: "Modern Apartments", desc: "Contrasting historical Paris with new builds.", size: "normal" },
+                    { src: "", title: "Street Market", desc: "Vibrant community gathering.", size: "normal" },
+                    { src: "", title: "Bistro Dinner", desc: "A quiet meal away from the tourist centers.", size: "large" }
+                ]
+            }
+            // TO ADD A NEW TAB, UNCOMMENT AND EDIT BELOW:
+            /*
+            ,{
+                id: "lyon",
+                name: "Lyon",
+                subtitle: "Gastronomic capital of France.",
+                images: [
+                    { src: "", title: "Bouchon", desc: "Traditional Lyon restaurant.", size: "normal" }
+                ]
+            }
+            */
+        ];
+
+        /* ==========================================================================
+           CORE APPLICATION CLASS
+           ========================================================================== */
+        class GalleryApp {
+            constructor(data) {
+                this.data = data;
+                this.currentTabId = data[0].id; // Default to first tab
+                this.dom = {
+                    nav: document.getElementById('main-nav'),
+                    tabsContainer: document.getElementById('tabs-container'),
+                    loader: document.getElementById('loader')
+                };
+                
+                // Lightbox state
+                this.lightbox = {
+                    active: false,
+                    images: [],
+                    currentIndex: 0,
+                    elements: {
+                        container: document.getElementById('lightbox'),
+                        img: document.getElementById('lb-img'),
+                        title: document.getElementById('lb-title'),
+                        desc: document.getElementById('lb-desc'),
+                        counter: document.getElementById('lb-counter'),
+                        close: document.getElementById('lb-close'),
+                        prev: document.getElementById('lb-prev'),
+                        next: document.getElementById('lb-next')
+                    }
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.buildNavigation();
+                this.buildTabs();
+                this.setupLightbox();
+                this.switchTab(this.currentTabId);
+                this.initLiquidBackground();
+            }
+
+            /* --- UI BUILDERS --- */
+
+            buildNavigation() {
+                this.data.forEach(tab => {
+                    const btn = document.createElement('button');
+                    btn.className = 'glass-button';
+                    btn.dataset.target = tab.id;
+                    btn.innerHTML = `
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        ${tab.name}
+                    `;
+                    btn.addEventListener('click', () => this.switchTab(tab.id));
+                    this.dom.nav.appendChild(btn);
+                });
+            }
+
+            buildTabs() {
+                this.data.forEach(tab => {
+                    // Create section container
+                    const section = document.createElement('section');
+                    section.className = 'tab-section';
+                    section.id = `tab-${tab.id}`;
+
+                    // Create header
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.innerHTML = `<h2>${tab.name}</h2><p class="subtitle" style="margin-bottom:0;">${tab.subtitle}</p>`;
+                    
+                    // Create Grid
+                    const grid = document.createElement('div');
+                    grid.className = 'gallery-grid';
+
+                    // Populate Grid
+                    tab.images.forEach((imgData, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'glass-panel gallery-item';
+                        
+                        // Apply size utilities based on configuration
+                        if(imgData.size === 'large') item.classList.add('span-col-2', 'span-row-2');
+                        else if(imgData.size === 'wide') item.classList.add('span-col-2');
+                        else if(imgData.size === 'tall') item.classList.add('span-row-2');
+
+                        // Generate image source or placeholder
+                        const finalSrc = imgData.src && imgData.src.trim() !== "" 
+                            ? imgData.src 
+                            : this.generatePlaceholderURI(imgData.title);
+
+                        item.innerHTML = `
+                            <img src="${finalSrc}" alt="${imgData.title}" loading="lazy">
+                            <div class="item-overlay">
+                                <h3 class="item-title">${imgData.title}</h3>
+                                <p class="item-desc">${imgData.desc}</p>
+                            </div>
+                        `;
+
+                        // Bind lightbox click event
+                        item.addEventListener('click', () => this.openLightbox(tab.id, index));
+                        grid.appendChild(item);
+                    });
+
+                    section.appendChild(header);
+                    section.appendChild(grid);
+                    this.dom.tabsContainer.appendChild(section);
+                });
+            }
+
+            // Helper to generate a colorful SVG placeholder if no image URL is provided
+            generatePlaceholderURI(text) {
+                // Generate a pseudo-random hue based on string length and char codes
+                let hash = 0;
+                for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash);
+                const hue1 = Math.abs(hash % 360);
+                const hue2 = (hue1 + 40) % 360;
+                
+                const svg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+                        <defs>
+                            <linearGradient id="grad${hash}" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:hsl(${hue1}, 40%, 30%);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:hsl(${hue2}, 60%, 15%);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grad${hash})" />
+                        <circle cx="400" cy="400" r="100" fill="rgba(255,255,255,0.05)" />
+                        <circle cx="400" cy="400" r="150" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+                        <path d="M350 450 L450 350 M350 350 L450 450" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                `;
+                return `data:image/svg+xml;base64,${btoa(svg)}`;
+            }
+
+            /* --- NAVIGATION LOGIC --- */
+
+            switchTab(tabId) {
+                this.currentTabId = tabId;
+                
+                // Update Nav Buttons
+                const navBtns = this.dom.nav.querySelectorAll('.glass-button');
+                navBtns.forEach(btn => {
+                    if(btn.dataset.target === tabId) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+
+                // Hide all sections
+                const sections = this.dom.tabsContainer.querySelectorAll('.tab-section');
+                sections.forEach(sec => {
+                    sec.classList.remove('active', 'fade-in');
+                });
+
+                // Show loader briefly to simulate processing/fetching layout
+                this.dom.loader.classList.add('active');
+                
+                setTimeout(() => {
+                    this.dom.loader.classList.remove('active');
+                    const activeSection = document.getElementById(`tab-${tabId}`);
+                    if(activeSection) {
+                        activeSection.classList.add('active');
+                        // Trigger reflow
+                        void activeSection.offsetWidth; 
+                        activeSection.classList.add('fade-in');
+                    }
+                }, 300);
+            }
+
+            /* --- LIGHTBOX LOGIC --- */
+
+            setupLightbox() {
+                const lb = this.lightbox.elements;
+                
+                lb.close.addEventListener('click', () => this.closeLightbox());
+                lb.next.addEventListener('click', () => this.navigateLightbox(1));
+                lb.prev.addEventListener('click', () => this.navigateLightbox(-1));
+                
+                // Close on background click
+                lb.container.addEventListener('click', (e) => {
+                    if (e.target === lb.container || e.target.classList.contains('lightbox-content')) {
+                        this.closeLightbox();
+                    }
+                });
+
+                // Keyboard Support
+                document.addEventListener('keydown', (e) => {
+                    if (!this.lightbox.active) return;
+                    if (e.key === 'Escape') this.closeLightbox();
+                    if (e.key === 'ArrowRight') this.navigateLightbox(1);
+                    if (e.key === 'ArrowLeft') this.navigateLightbox(-1);
+                });
+
+                // Swipe Support for Mobile
+                let touchStartX = 0;
+                let touchEndX = 0;
+                lb.container.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, {passive: true});
+                
+                lb.container.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    this.handleSwipe();
+                }, {passive: true});
+            }
+
+            handleSwipe() {
+                const threshold = 50;
+                if (touchEndX < touchStartX - threshold) this.navigateLightbox(1); // Swipe left -> Next
+                if (touchEndX > touchStartX + threshold) this.navigateLightbox(-1); // Swipe right -> Prev
+            }
+
+            openLightbox(tabId, imageIndex) {
+                // Find tab data
+                const tabData = this.data.find(t => t.id === tabId);
+                if(!tabData) return;
+
+                this.lightbox.images = tabData.images;
+                this.lightbox.currentIndex = imageIndex;
+                this.lightbox.active = true;
+                
+                this.updateLightboxContent();
+                this.lightbox.elements.container.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Lock background scroll
+            }
+
+            closeLightbox() {
+                this.lightbox.active = false;
+                this.lightbox.elements.container.classList.remove('active');
+                document.body.style.overflow = ''; // Restore background scroll
+                
+                // Clear source after fade out to prevent visual glitch on next open
+                setTimeout(() => {
+                    this.lightbox.elements.img.src = '';
+                }, 400);
+            }
+
+            navigateLightbox(direction) {
+                let newIndex = this.lightbox.currentIndex + direction;
+                const total = this.lightbox.images.length;
+                
+                // Loop around
+                if (newIndex >= total) newIndex = 0;
+                if (newIndex < 0) newIndex = total - 1;
+                
+                this.lightbox.currentIndex = newIndex;
+                
+                // Quick fade out/in effect for image change
+                const imgWrap = document.querySelector('.lightbox-img-wrapper');
+                imgWrap.style.transform = 'scale(0.95)';
+                imgWrap.style.opacity = '0';
+                
+                setTimeout(() => {
+                    this.updateLightboxContent();
+                    imgWrap.style.transform = 'scale(1)';
+                    imgWrap.style.opacity = '1';
+                }, 200);
+            }
+
+            updateLightboxContent() {
+                const lb = this.lightbox.elements;
+                const imgData = this.lightbox.images[this.lightbox.currentIndex];
+                
+                // Use placeholder if src is missing
+                const finalSrc = imgData.src && imgData.src.trim() !== "" 
+                    ? imgData.src 
+                    : this.generatePlaceholderURI(imgData.title);
+
+                lb.img.src = finalSrc;
+                lb.title.textContent = imgData.title;
+                lb.desc.textContent = imgData.desc;
+                lb.counter.textContent = `${this.lightbox.currentIndex + 1} / ${this.lightbox.images.length}`;
+            }
+
+            /* --- LIQUID BACKGROUND ANIMATION (WEBGL/CANVAS FALLBACK) --- */
+            
+            initLiquidBackground() {
+                const canvas = document.getElementById('liquid-canvas');
+                const ctx = canvas.getContext('2d');
+                let width, height;
+                let particles = [];
+                
+                const resize = () => {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                };
+                window.addEventListener('resize', resize);
+                resize();
+
+                class Particle {
+                    constructor() {
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.radius = Math.random() * 200 + 100; // Large blobs
+                        this.vx = (Math.random() - 0.5) * 0.5;
+                        this.vy = (Math.random() - 0.5) * 0.5;
+                        
+                        // Select colors from a deep, liquid palette
+                        const colors = [
+                            'rgba(15, 32, 39, 0.6)',
+                            'rgba(32, 58, 67, 0.6)',
+                            'rgba(44, 83, 100, 0.6)',
+                            'rgba(77, 168, 218, 0.1)' // accent highlight
+                        ];
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+
+                    update() {
+                        this.x += this.vx;
+                        this.y += this.vy;
+
+                        // Bounce off edges
+                        if (this.x < -this.radius || this.x > width + this.radius) this.vx *= -1;
+                        if (this.y < -this.radius || this.y > height + this.radius) this.vy *= -1;
+                    }
+
+                    draw(ctx) {
+                        ctx.beginPath();
+                        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                        gradient.addColorStop(0, this.color);
+                        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                        ctx.fillStyle = gradient;
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                // Initialize blobs
+                for (let i = 0; i < 15; i++) {
+                    particles.push(new Particle());
+                }
+
+                const animate = () => {
+                    // Clear with dark transparent background for motion blur effect
+                    ctx.fillStyle = 'rgba(5, 5, 5, 0.8)';
+                    ctx.fillRect(0, 0, width, height);
+
+                    particles.forEach(p => {
+                        p.update();
+                        p.draw(ctx);
+                    });
+
+                    requestAnimationFrame(animate);
+                };
+
+                animate();
+            }
         }
 
-        // Lightbox Logic
-        function openLightbox(element) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            const lightboxPlaceholder = document.getElementById('lightbox-placeholder');
-            const caption = document.getElementById('lightbox-caption');
+        // Boot the application once DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new GalleryApp(TRIP_DATA);
             
-            // Check if element has an img tag or just a placeholder
-            const imgElement = element.querySelector('img');
-            const titleElement = element.querySelector('h3');
+            // Add a slight parallax effect to cards based on mouse movement for extra polish
+            document.addEventListener('mousemove', (e) => {
+                const cards = document.querySelectorAll('.gallery-item:hover');
+                if(!cards.length) return;
+                
+                const card = cards[0];
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -5;
+                const rotateY = ((x - centerX) / centerX) * 5;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02) translateY(-4px)`;
+            });
             
-            if (imgElement) {
-                lightboxImg.src = imgElement.src;
-                lightboxImg.style.display = "block";
-                lightboxPlaceholder.style.display = "none";
-            } else {
-                lightboxImg.style.display = "none";
-                lightboxPlaceholder.style.display = "flex";
-                lightboxPlaceholder.innerText = element.querySelector('.placeholder-img').innerText;
-            }
+            // Reset transform on mouse leave
+            document.addEventListener('mouseout', (e) => {
+                if(e.target.classList && e.target.classList.contains('gallery-item')){
+                    e.target.style.transform = '';
+                }
+            });
+        });
 
-            caption.innerText = titleElement ? titleElement.innerText : 'France 2026';
-            lightbox.classList.add('active');
-            document.body.style.overflow = "hidden"; // Prevent scrolling behind lightbox
-        }
-
-        function closeLightbox(event) {
-            // Only close if clicking outside the image
-            if(event.target.id === 'lightbox' || event.target.className === 'lightbox-close') {
-                const lightbox = document.getElementById('lightbox');
-                lightbox.classList.remove('active');
-                document.body.style.overflow = "auto";
-            }
-        }
     </script>
 </body>
 </html>
